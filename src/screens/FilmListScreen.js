@@ -3,7 +3,6 @@ import { StatusBar } from "expo-status-bar";
 import { View, Text, TextInput, TouchableOpacity, SafeAreaView, FlatList } from "react-native";
 
 import styles from "../../App.styles";
-import FilmFlatList from "../components/FilmFlatList";
 
 function FilmListScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
@@ -66,12 +65,15 @@ function FilmListScreen({ navigation }) {
       <TouchableOpacity style={styles.button} onPress={() => navigation.goBack("HomeScreen")}>
         <Text style={styles.buttonText}>Home</Text>
       </TouchableOpacity>
-      <Text style={styles.pageTitle}>Movie List</Text>
+      <Text style={styles.pageTitle}>Film List</Text>
 
       <FlatList
         data={films}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.film} onPress={() => navigation.navigate("Film")}>
+          <TouchableOpacity
+            style={styles.film}
+            onPress={() => navigation.navigate("Film", { id: item._id })}
+          >
             <Text style={styles.movieTitle}>{item.title}</Text>
           </TouchableOpacity>
         )}

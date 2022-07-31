@@ -13,6 +13,8 @@ export default function Film({ route, navigation }) {
     releaseYear: "",
   });
 
+  const { id } = route.params.id;
+
   const onChangeTitle = (value) => {
     setValues({ ...values, title: value });
   };
@@ -27,15 +29,11 @@ export default function Film({ route, navigation }) {
 
   const getFilm = async () => {
     try {
-      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films/`)
+      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films/${id}`)
         .then((res) => res.json())
         .then((data) => {
           console.log({ data });
-          setValues({
-            title: data.title,
-            director: data.director,
-            releaseYear: data.releaseYear,
-          });
+          setValues({ values });
         });
     } catch (error) {
       console.error(error);
@@ -44,13 +42,19 @@ export default function Film({ route, navigation }) {
     }
   };
 
+  let ignore = false;
   useEffect(() => {
-    getFilm();
+    if (!ignore) {
+      getFilm();
+    }
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const updateFilm = async () => {
     try {
-      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films/` + item._id, {
+      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films/${id}`, {
         method: `PATCH`,
         headers: {
           "Content-Type": "application/json",
@@ -69,7 +73,7 @@ export default function Film({ route, navigation }) {
 
   const deleteFilm = async () => {
     try {
-      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films/` + item._id, {
+      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films/${id}`, {
         method: `DELETE`,
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +98,8 @@ export default function Film({ route, navigation }) {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("FilmList")}>
         <Text style={styles.buttonText}>Film List</Text>
       </TouchableOpacity>
-      <Text style={styles.pageTitle}>Movie List</Text>
+      <Text style={styles.pageTitle}>Film Info</Text>
+
       <View style={styles.inputContainer}>
         <TextInput
           placeholder={"Film Title"}
@@ -114,12 +119,12 @@ export default function Film({ route, navigation }) {
           value={values.releaseYear}
           style={styles.input}
         />
-        <View>
+        <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={updateFilm} style={styles.addButton}>
-            <Text style={styles.buttonText}>Update Film</Text>
+            <Text style={styles.buttonText}>{loading ? "Waiting" : "Edit Film Info"}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={deleteFilm} style={styles.addButton}>
-            <Text style={styles.buttonText}>Delete Film</Text>
+            <Text style={styles.buttonText}>{loading ? "Waiting..." : "Delete Film"}</Text>
           </TouchableOpacity>
         </View>
       </View>

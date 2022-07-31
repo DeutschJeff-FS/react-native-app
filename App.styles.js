@@ -58,9 +58,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginVertical: 10,
   },
-  logSignButtonContainer: {
+  buttonContainer: {
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
   },
