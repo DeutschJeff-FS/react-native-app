@@ -13,7 +13,7 @@ export default function Film({ route, navigation }) {
     releaseYear: "",
   });
 
-  const { id } = route.params.id;
+  const { _id } = route.params;
 
   const onChangeTitle = (value) => {
     setValues({ ...values, title: value });
@@ -29,11 +29,11 @@ export default function Film({ route, navigation }) {
 
   const getFilm = async () => {
     try {
-      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films/${id}`)
+      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films/${_id}`)
         .then((res) => res.json())
         .then((data) => {
           console.log({ data });
-          setValues({ values });
+          setValues({ title: data.title, director: data.director, releaseYear: data.releaseYear });
         });
     } catch (error) {
       console.error(error);
@@ -54,7 +54,7 @@ export default function Film({ route, navigation }) {
 
   const updateFilm = async () => {
     try {
-      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films/${id}`, {
+      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films/${_id}`, {
         method: `PATCH`,
         headers: {
           "Content-Type": "application/json",
@@ -73,18 +73,20 @@ export default function Film({ route, navigation }) {
 
   const deleteFilm = async () => {
     try {
-      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films/${id}`, {
+      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films/${_id}`, {
         method: `DELETE`,
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ values }),
       })
         .then((response) => {
           response.json();
-          navigation.push("FilmList");
         })
-        .then((data) => console.log(data));
+        .then((data) => {
+          console.log(data);
+          setFilms(data);
+          navigation.goBack("FilmList");
+        });
     } catch (error) {
       console.error(error);
     }
@@ -92,14 +94,20 @@ export default function Film({ route, navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Home")}>
-        <Text style={styles.buttonText}>Home</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("FilmList")}>
-        <Text style={styles.buttonText}>Film List</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Home")}>
+          <Text style={styles.buttonText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("FilmList")}>
+          <Text style={styles.buttonText}>Film List</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.pageTitle}>Film Info</Text>
-
+      <View style={styles.filmInfo}>
+        <Text style={styles.filmInfoText}>{values && values.title}</Text>
+        <Text style={styles.filmInfoText}>{values && values.director}</Text>
+        <Text style={styles.filmInfoText}>{values && values.releaseYear}</Text>
+      </View>
       <View style={styles.inputContainer}>
         <TextInput
           placeholder={"Film Title"}

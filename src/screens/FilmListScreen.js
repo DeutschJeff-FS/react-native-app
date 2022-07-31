@@ -5,8 +5,8 @@ import { View, Text, TextInput, TouchableOpacity, SafeAreaView, FlatList } from 
 import styles from "../../App.styles";
 
 function FilmListScreen({ navigation }) {
-  const [loading, setLoading] = useState(true);
-  const [films, setFilms] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [films, setFilms] = useState(null);
   const [values, setValues] = useState({
     title: "",
     director: "",
@@ -30,10 +30,14 @@ function FilmListScreen({ navigation }) {
   }, []);
 
   const getFilms = async () => {
+    setLoading(true);
     try {
-      const response = await fetch(`https://demo-film-database.herokuapp.com/api/v1/films`);
-      const json = await response.json();
-      setFilms(json);
+      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log({ data });
+          setFilms(data);
+        });
     } catch (error) {
       console.error(error);
     } finally {
@@ -43,21 +47,21 @@ function FilmListScreen({ navigation }) {
 
   const saveFilm = async () => {
     try {
-      setLoading(true);
       await fetch(`https://demo-film-database.herokuapp.com/api/v1/films`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ values }),
-      })
-        .then((response) => {
-          setLoading(false);
-          response.text();
-          console.log(values);
-        })
-        .then(() => getFilms());
+      }).then(() => getFilms());
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    saveFilm();
   };
 
   return (
@@ -72,7 +76,7 @@ function FilmListScreen({ navigation }) {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.film}
-            onPress={() => navigation.navigate("Film", { id: item._id })}
+            onPress={() => navigation.navigate("Film", { _id: item._id })}
           >
             <Text style={styles.movieTitle}>{item.title}</Text>
           </TouchableOpacity>
@@ -96,7 +100,7 @@ function FilmListScreen({ navigation }) {
           onChangeText={(value) => onChangeReleaseYear(value)}
           style={styles.input}
         />
-        <TouchableOpacity onPress={saveFilm} style={styles.addButton}>
+        <TouchableOpacity onPress={(event) => handleSubmit(event)} style={styles.addButton}>
           <Text style={styles.buttonText}>{loading ? `Waiting` : `Add Film`}</Text>
         </TouchableOpacity>
       </View>

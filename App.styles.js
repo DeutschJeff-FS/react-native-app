@@ -28,6 +28,19 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginVertical: 5,
   },
+  filmInfo: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#5fa8d3",
+    borderRadius: 5,
+    marginVertical: 15,
+  },
+  filmInfoText: {
+    fontSize: 18,
+  },
   movieTitle: {
     textAlign: "center",
     color: "#fff",
@@ -56,11 +69,11 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#1b4965",
     borderRadius: 5,
-    marginVertical: 10,
+    margin: 10,
   },
   buttonContainer: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
   },
