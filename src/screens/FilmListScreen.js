@@ -6,7 +6,7 @@ import styles from "../../App.styles";
 import FilmFlatList from "../components/FilmFlatList";
 
 function FilmListScreen({ navigation }) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [films, setFilms] = useState([]);
   const [values, setValues] = useState({
     title: "",
@@ -26,31 +26,21 @@ function FilmListScreen({ navigation }) {
     setValues({ ...values, releaseYear: value });
   };
 
+  useEffect(() => {
+    getFilms();
+  }, []);
+
   const getFilms = async () => {
-    setLoading(true);
     try {
-      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films`)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log({ data });
-          setFilms(data);
-        });
+      const response = await fetch(`https://demo-film-database.herokuapp.com/api/v1/films`);
+      const json = await response.json();
+      setFilms(json);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
-
-  let ignore = false;
-  useEffect(() => {
-    if (!ignore) {
-      getFilms();
-    }
-    return () => {
-      ignore = true;
-    };
-  }, []);
 
   const saveFilm = async () => {
     try {
@@ -62,10 +52,9 @@ function FilmListScreen({ navigation }) {
       })
         .then((response) => {
           setLoading(false);
-          response.json();
-          setFilms();
+          response.text();
+          console.log(values);
         })
-        .then((data) => console.log(data))
         .then(() => getFilms());
     } catch (error) {
       console.error(error);
