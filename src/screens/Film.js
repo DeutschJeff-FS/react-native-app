@@ -63,7 +63,7 @@ export default function Film({ route, navigation }) {
       })
         .then((response) => {
           response.json();
-          navigation.push("FilmList");
+          navigation.goBack("FilmList");
         })
         .then((data) => console.log(data));
     } catch (error) {

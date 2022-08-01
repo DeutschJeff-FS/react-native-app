@@ -30,43 +30,37 @@ function FilmListScreen({ navigation }) {
   }, []);
 
   const getFilms = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`https://demo-film-database.herokuapp.com/api/v1/films`);
+      const json = await response.json();
+      setFilms(json);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveFilm = () => {
     setLoading(true);
-    try {
-      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films`)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log({ data });
-          setFilms(data);
-        });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const saveFilm = async () => {
-    try {
-      await fetch(`https://demo-film-database.herokuapp.com/api/v1/films`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ values }),
-      }).then(() => getFilms());
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    saveFilm();
+    fetch(`https://demo-film-database.herokuapp.com/api/v1/films`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    })
+      .then((response) => {
+        setLoading(false);
+        response.text();
+        console.log(values);
+      })
+      .then(() => getFilms())
+      .catch((error) => console.error(error));
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.goBack("HomeScreen")}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.goBack("Home")}>
         <Text style={styles.buttonText}>Home</Text>
       </TouchableOpacity>
       <Text style={styles.pageTitle}>Film List</Text>
@@ -100,7 +94,7 @@ function FilmListScreen({ navigation }) {
           onChangeText={(value) => onChangeReleaseYear(value)}
           style={styles.input}
         />
-        <TouchableOpacity onPress={(event) => handleSubmit(event)} style={styles.addButton}>
+        <TouchableOpacity onPress={saveFilm} style={styles.addButton}>
           <Text style={styles.buttonText}>{loading ? `Waiting` : `Add Film`}</Text>
         </TouchableOpacity>
       </View>
